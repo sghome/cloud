@@ -2,10 +2,17 @@ var camera, scene, renderer,
     geometry, material, mesh;
  
 init();
-animate();
- 
+animate(); 
+
 function init() {
-   clock = new THREE.Clock();
+    stats = new Stats();
+    stats.setMode(0);
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.left = '0px';
+    stats.domElement.style.top = '0px';
+    document.body.appendChild(stats.domElement);
+
+    clock = new THREE.Clock();
 
     renderer = new THREE.WebGLRenderer();
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -17,20 +24,28 @@ function init() {
     scene.add( camera );
  
     geometry = new THREE.CubeGeometry( 200, 200, 200 );
-    material = new THREE.MeshLambertMaterial( { color: 0xffffff, wireframe: false } );
+    material = new THREE.MeshLambertMaterial( { color: 0xaa6666, wireframe: false } );
     mesh = new THREE.Mesh( geometry, material );
+    //scene.add( mesh );
     cubeSineDriver = 0;
  
+    textGeo = new THREE.PlaneGeometry(300,300);
     THREE.ImageUtils.crossOrigin = ''; //Need this to pull in crossdomain images from AWS
- 
+    textTexture = THREE.ImageUtils.loadTexture('https://cdn.glitch.global/2bc9552a-c9df-4a0a-bdf1-af20de3c372e/g12.png');
+    textMaterial = new THREE.MeshLambertMaterial({color: 0x00ffff, opacity: 1, map: textTexture, transparent: true, blending: THREE.AdditiveBlending})
+    text = new THREE.Mesh(textGeo,textMaterial);
+    text.position.z = 750;
+    scene.add(text);
+
     light = new THREE.DirectionalLight(0xffffff,0.5);
     light.position.set(-1,0,1);
     scene.add(light);
   
     smokeTexture = THREE.ImageUtils.loadTexture('https://s3-us-west-2.amazonaws.com/s.cdpn.io/95637/Smoke-Element.png');
-    smokeMaterial = new THREE.MeshLambertMaterial({color: 0xaa77, map: smokeTexture, transparent: true});
+    smokeMaterial = new THREE.MeshLambertMaterial({color: 0x00dddd, map: smokeTexture, transparent: true});
     smokeGeo = new THREE.PlaneGeometry(300,300);
     smokeParticles = [];
+
 
     for (p = 0; p < 150; p++) {
         var particle = new THREE.Mesh(smokeGeo,smokeMaterial);
@@ -39,14 +54,20 @@ function init() {
         scene.add(particle);
         smokeParticles.push(particle);
     }
+ 
     document.body.appendChild( renderer.domElement );
+ 
 }
  
 function animate() {
+ 
+    // note: three.js includes requestAnimationFrame shim
+    stats.begin();
     delta = clock.getDelta();
     requestAnimationFrame( animate );
     evolveSmoke();
     render();
+    stats.end();
 }
  
 function evolveSmoke() {
@@ -57,9 +78,17 @@ function evolveSmoke() {
 }
 
 function render() {
+ 
     mesh.rotation.x += 0.005;
     mesh.rotation.y += 0.01;
     cubeSineDriver += .01;
     mesh.position.z = 100 + (Math.sin(cubeSineDriver) * 500);
     renderer.render( scene, camera );
+ 
 }
+
+
+
+
+
+
