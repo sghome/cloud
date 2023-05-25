@@ -28,7 +28,7 @@ function init() {
     scene.add(light);
   
     smokeTexture = THREE.ImageUtils.loadTexture('https://s3-us-west-2.amazonaws.com/s.cdpn.io/95637/Smoke-Element.png');
-    smokeMaterial = new THREE.MeshLambertMaterial({color: 0xffffff, map: smokeTexture, transparent: true});
+    smokeMaterial = new THREE.MeshLambertMaterial({color: 0xaa77, map: smokeTexture, transparent: true});
     smokeGeo = new THREE.PlaneGeometry(300,300);
     smokeParticles = [];
 
